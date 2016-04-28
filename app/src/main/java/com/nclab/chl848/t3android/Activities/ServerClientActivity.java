@@ -1,6 +1,7 @@
 package com.nclab.chl848.t3android.Activities;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -30,14 +31,19 @@ public class ServerClientActivity extends Activity {
         });
 
         Button btnClient = (Button)this.findViewById(R.id.btnClient);
-        btnClient.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                GameManager.getInstance().setIsHost(false);
-                GameManager.getInstance().getLocalPlayer().imageId = R.drawable.opiece;
-                gotoLobby();
-            }
-        });
+        if (BluetoothAdapter.getDefaultAdapter().isMultipleAdvertisementSupported()) {
+            btnClient.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    GameManager.getInstance().setIsHost(false);
+                    GameManager.getInstance().getLocalPlayer().imageId = R.drawable.opiece;
+                    gotoLobby();
+                }
+            });
+        } else {
+            btnClient.setEnabled(false);
+            btnClient.setVisibility(View.INVISIBLE);
+        }
 
         ImageButton btnBack = (ImageButton)this.findViewById(R.id.btnBack);
         btnBack.setOnClickListener(new View.OnClickListener() {
