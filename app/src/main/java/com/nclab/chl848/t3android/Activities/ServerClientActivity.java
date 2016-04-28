@@ -24,7 +24,7 @@ public class ServerClientActivity extends Activity {
             @Override
             public void onClick(View v) {
                 GameManager.getInstance().setIsHost(true);
-                GameManager.getInstance().getLocalPlayer().imageName = "@drawable/xpiece";
+                GameManager.getInstance().getLocalPlayer().imageId = R.drawable.xpiece;
                 gotoLobby();
             }
         });
@@ -34,7 +34,7 @@ public class ServerClientActivity extends Activity {
             @Override
             public void onClick(View v) {
                 GameManager.getInstance().setIsHost(false);
-                GameManager.getInstance().getLocalPlayer().imageName = "@drawable/opiece";
+                GameManager.getInstance().getLocalPlayer().imageId = R.drawable.opiece;
                 gotoLobby();
             }
         });

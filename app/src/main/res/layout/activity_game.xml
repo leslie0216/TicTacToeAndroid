@@ -7,6 +7,146 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.nclab.chl848.t3android.Activities.GameActivity">
+    tools:context="com.nclab.chl848.t3android.Activities.GameActivity"
+    android:background="@android:color/holo_blue_light">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/title"
+        android:id="@+id/lbTurnMsg"
+        android:layout_marginTop="34dp"
+        android:textSize="60sp"
+        android:textColor="#ffffff"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TableLayout
+        android:layout_width="wrap_content"
+        android:layout_height="350dp"
+        android:layout_below="@+id/lbTurnMsg"
+        android:layout_alignParentEnd="false"
+        android:id="@+id/board"
+        android:gravity="center_horizontal"
+        android:baselineAligned="false"
+        android:layout_alignParentStart="false"
+        android:layout_marginTop="15dp"
+        android:layout_centerInParent="true">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="10dp">
+
+            <ImageButton
+                android:layout_width="110dp"
+                android:layout_height="110dp"
+                android:id="@+id/tile6"
+                android:src="@drawable/blankpiece"
+                android:scaleType="fitCenter"
+                android:background="#00000000"
+                android:contentDescription="@string/tile6" />
+
+            <ImageButton
+                android:layout_width="110dp"
+                android:layout_height="110dp"
+                android:id="@+id/tile7"
+                android:src="@drawable/blankpiece"
+                android:scaleType="fitCenter"
+                android:background="#00000000"
+                android:contentDescription="@string/tile7" />
+
+            <ImageButton
+                android:layout_width="110dp"
+                android:layout_height="110dp"
+                android:id="@+id/tile8"
+                android:src="@drawable/blankpiece"
+                android:scaleType="fitCenter"
+                android:background="#00000000"
+                android:contentDescription="@string/tile8"
+                android:layout_column="2" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal">
+
+            <ImageButton
+                android:layout_width="110dp"
+                android:layout_height="110dp"
+                android:id="@+id/tile3"
+                android:src="@drawable/blankpiece"
+                android:scaleType="fitCenter"
+                android:background="#00000000"
+                android:contentDescription="@string/tile3" />
+
+            <ImageButton
+                android:layout_width="110dp"
+                android:layout_height="110dp"
+                android:id="@+id/tile4"
+                android:src="@drawable/blankpiece"
+                android:scaleType="fitCenter"
+                android:background="#00000000"
+                android:contentDescription="@string/tile4" />
+
+            <ImageButton
+                android:layout_width="110dp"
+                android:layout_height="110dp"
+                android:id="@+id/tile5"
+                android:src="@drawable/blankpiece"
+                android:scaleType="fitCenter"
+                android:background="#00000000"
+                android:contentDescription="@string/tile5" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal">
+
+            <ImageButton
+                android:layout_width="110dp"
+                android:layout_height="110dp"
+                android:id="@+id/tile0"
+                android:src="@drawable/blankpiece"
+                android:scaleType="fitCenter"
+                android:background="#00000000"
+                android:contentDescription="@string/tile0" />
+
+            <ImageButton
+                android:layout_width="110dp"
+                android:layout_height="110dp"
+                android:id="@+id/tile1"
+                android:src="@drawable/blankpiece"
+                android:scaleType="fitCenter"
+                android:background="#00000000"
+                android:contentDescription="@string/tile1" />
+
+            <ImageButton
+                android:layout_width="110dp"
+                android:layout_height="110dp"
+                android:id="@+id/tile2"
+                android:src="@drawable/blankpiece"
+                android:scaleType="fitCenter"
+                android:background="#00000000"
+                android:contentDescription="@string/tile2" />
+        </TableRow>
+
+    </TableLayout>
+
+    <ImageButton
+        tools:ignore="ContentDescription"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/btnQuit"
+        android:src="@drawable/buttonback"
+        android:scaleType="fitCenter"
+        android:background="@android:color/transparent"
+        android:adjustViewBounds="false"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

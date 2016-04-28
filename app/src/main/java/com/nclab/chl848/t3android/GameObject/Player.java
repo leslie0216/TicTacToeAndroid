@@ -8,6 +8,6 @@ import java.util.Set;
 public class Player {
     public int playerId;
     public String playerName;
-    public String imageName;
+    public int imageId;
     public Set<Integer> tileNumPlayed;
 }

@@ -6,6 +6,8 @@ package com.nclab.chl848.t3android;
 public class Parameters {
     public static final String TAG = "T3";
 
+    public static final char GRID_SIZE = 3;
+
     public static final char MAX_USERNAME_LENGTH = 8;
     public static final char MIN_USERNAME_LENGTH = 3;
 

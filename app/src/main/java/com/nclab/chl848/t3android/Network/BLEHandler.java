@@ -88,7 +88,7 @@ public class BLEHandler {
 
     //region COMMON VARS
     private String m_localName;
-    private Activity m_currentActivity;
+    private Activity m_currentActivity = null;
     private BluetoothManager m_bluetoothManager;
     private BluetoothAdapter m_bluetoothAdapter;
     private boolean isCentral;
@@ -105,7 +105,7 @@ public class BLEHandler {
     private ScanCallback m_scanCallback;
     private BluetoothGattCallback m_gattCallback;
     private Hashtable<String, PeripheralInfo> m_peripheralDevices = null;
-    //public List<CentralSendMessageInfo> CentralMessageSendQueue = new LinkedList<>();
+    public List<CentralSendMessageInfo> CentralMessageSendQueue = new LinkedList<>();
     //endregion
 
     //region PERIPHERAL VARS
@@ -224,6 +224,7 @@ public class BLEHandler {
                 m_peripheralDevices.clear();
                 m_peripheralDevices = null;
             }
+            CentralMessageSendQueue.clear();
 
             /*
             if (m_senderThread != null){
@@ -242,14 +243,24 @@ public class BLEHandler {
     }
 
     private void broadcastStatus(String action) {
-        Intent i = new Intent(action);
-        m_currentActivity.sendBroadcast(i);
+        if (m_currentActivity != null) {
+            Intent i = new Intent(action);
+            m_currentActivity.sendBroadcast(i);
+        }
     }
 
     private void broadcastStatus(String action, String msg) {
-        Intent i = new Intent(action);
-        i.putExtra(BLE_EXTRA_DATA, msg);
-        m_currentActivity.sendBroadcast(i);
+        if (m_currentActivity != null) {
+            Intent i = new Intent(action);
+            i.putExtra(BLE_EXTRA_DATA, msg);
+            m_currentActivity.sendBroadcast(i);
+        }
+    }
+
+    private void broadcastStatus(Intent intent) {
+        if (m_currentActivity != null) {
+            m_currentActivity.sendBroadcast(intent);
+        }
     }
 
     private void broadcastStatus(String action, String msg, String address) {
@@ -502,6 +513,16 @@ public class BLEHandler {
             public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
                 super.onCharacteristicWrite(gatt, characteristic, status);
                 Log.d(TAG, "onCharacteristicWrite: " + characteristic.getUuid().toString() + " status=" + status);
+
+                if (status == BluetoothGatt.GATT_SUCCESS && CentralMessageSendQueue.size() != 0) {
+                    CentralMessageSendQueue.remove(0);
+                }
+
+                if (CentralMessageSendQueue.size() != 0) {
+                    CentralSendMessageInfo msgInfo = CentralMessageSendQueue.get(0);
+                    msgInfo.m_characteristic.setValue(msgInfo.m_value);
+                    msgInfo.m_bluetoothGatt.writeCharacteristic(msgInfo.m_characteristic);
+                }
             }
 
             @Override
@@ -515,7 +536,15 @@ public class BLEHandler {
                     i.putExtra(BLE_EXTRA_DATA_RECEIVE_TIME, receiveTime);
                     i.putExtra(BLE_EXTRA_DATA, characteristic.getValue());
                     i.putExtra(BLE_EXTRA_DATA_ADDRESS, gatt.getDevice().getAddress());
-                    m_currentActivity.sendBroadcast(i);
+                    if (m_currentActivity == null) {
+                        Log.d(TAG, "onCharacteristicChanged: current activity is null, sleep 1000");
+                        try {
+                            Thread.sleep(1000);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                    broadcastStatus(i);
                 }
             }
 
@@ -537,7 +566,6 @@ public class BLEHandler {
                     broadcastStatus(BLE_GATT_DISCONNECTED_ACTION);
                 } else {
                     gatt.requestMtu(MAX_MTU); // request max MTU once all stuff have been done
-                    broadcastStatus(BLE_GATT_CONNECTED_ACTION);
                 }
             }
 
@@ -552,6 +580,7 @@ public class BLEHandler {
                         info.m_mtu = mtu;
                         m_peripheralDevices.put(gatt.getDevice().getAddress(), info);
                     }
+                    broadcastStatus(BLE_GATT_CONNECTED_ACTION);
                 }
             }
         };
@@ -565,8 +594,20 @@ public class BLEHandler {
 
             if (info.m_writeCharacteristic != null) {
                 //Log.d(TAG, "sendDataToAllPeripherals: initReliableWrite : " + info.m_bluetoothGatt.beginReliableWrite());
-                info.m_writeCharacteristic.setValue(msg);
-                rt =  info.m_bluetoothGatt.writeCharacteristic(info.m_writeCharacteristic);
+                CentralSendMessageInfo msgInfo = new CentralSendMessageInfo();
+                msgInfo.m_bluetoothGatt = info.m_bluetoothGatt;
+                msgInfo.m_characteristic = info.m_writeCharacteristic;
+                msgInfo.m_value = msg;
+                msgInfo.m_sendCount = 1;
+                msgInfo.m_sendIndex = 1;
+                CentralMessageSendQueue.add(msgInfo);
+
+                Log.d(TAG, "sendDataToAllPeripherals: CentralMessageSendQueue.size = " + CentralMessageSendQueue.size());
+
+                if (CentralMessageSendQueue.size() == 1) {
+                    info.m_writeCharacteristic.setValue(msg);
+                    rt = info.m_bluetoothGatt.writeCharacteristic(info.m_writeCharacteristic);
+                }
             } else {
                 rt =  false;
             }
@@ -581,8 +622,22 @@ public class BLEHandler {
         boolean rt = false;
         if (info != null) {
             if (info.m_writeCharacteristic != null) {
-                info.m_writeCharacteristic.setValue(msg);
-                rt =  info.m_bluetoothGatt.writeCharacteristic(info.m_writeCharacteristic);
+                CentralSendMessageInfo msgInfo = new CentralSendMessageInfo();
+                msgInfo.m_bluetoothGatt = info.m_bluetoothGatt;
+                msgInfo.m_characteristic = info.m_writeCharacteristic;
+                msgInfo.m_value = msg;
+                msgInfo.m_sendCount = 1;
+                msgInfo.m_sendIndex = 1;
+                CentralMessageSendQueue.add(msgInfo);
+
+                if (CentralMessageSendQueue.size() == 1) {
+                    info.m_writeCharacteristic.setValue(msg);
+                    rt = info.m_bluetoothGatt.writeCharacteristic(info.m_writeCharacteristic);
+                    if (!rt) {
+                        // resend once after 500ms
+                        scheduleResendMessage();
+                    }
+                }
             } else {
                 rt =  false;
             }
@@ -590,6 +645,20 @@ public class BLEHandler {
         }
 
         return rt;
+    }
+
+    private void scheduleResendMessage() {
+        (new Handler()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (CentralMessageSendQueue.size() != 0) {
+                    Log.d(TAG, "run: resend message");
+                    CentralSendMessageInfo msgInfo = CentralMessageSendQueue.get(0);
+                    msgInfo.m_characteristic.setValue(msgInfo.m_value);
+                    msgInfo.m_bluetoothGatt.writeCharacteristic(msgInfo.m_characteristic);
+                }
+            }
+        }, 500);
     }
 
     public int getPeripheralMTU(String address) {
@@ -672,7 +741,7 @@ public class BLEHandler {
                     Intent i = new Intent(BLE_RECEIVED_DATA_ACTION);
                     i.putExtra(BLE_EXTRA_DATA_RECEIVE_TIME, receiveTime);
                     i.putExtra(BLE_EXTRA_DATA, value);
-                    m_currentActivity.sendBroadcast(i);
+                    broadcastStatus(i);
                 }
             }
 

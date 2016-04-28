@@ -262,6 +262,7 @@ public class LobbyActivity extends Activity {
     protected void onPause() {
         super.onPause();
         unregisterReceiver(m_broadcastReceiver);
+        BLEHandler.getInstance().setCurrentActivity(null);
 
         if (BLEHandler.getInstance().isCentral()) {
             BLEHandler.getInstance().stopScan();

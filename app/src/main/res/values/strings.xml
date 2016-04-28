@@ -6,8 +6,9 @@
     <string name="server">Server</string>
     <string name="client">Client</string>
     <string name="waitingplayer">Waiting for player&#8230;</string>
+    <string name="waiting">Waiting&#8230;</string>
     <string name="searchinggame">Searching for game&#8230;</string>
-    <string name="empty">--Empty--</string>
+    <string name="empty">--empty--</string>
     <string name="scanfinish">Can not find player, keep searching?</string>
     <string name="advfinish">Can not find game, keep searching?</string>
     <string name="yes">Yes</string>
@@ -20,5 +21,21 @@
     <string name="btdisabled">Bluetooth is not enabled</string>
     <string name="gattdisconnect">Connection failed</string>
     <string name="readytogame">Ready to game</string>
+    <string name="tile0">tile 0</string>
+    <string name="tile1">tile 1</string>
+    <string name="tile2">tile 2</string>
+    <string name="tile3">tile 3</string>
+    <string name="tile4">tile 4</string>
+    <string name="tile5">tile 5</string>
+    <string name="tile6">tile 6</string>
+    <string name="tile7">tile 7</string>
+    <string name="tile8">tile 8</string>
+    <string name="quitconfirm">Do you want to quit the game?</string>
+    <string name="chooseplayer">Choose the first player</string>
+    <string name="yourTurn">Your Turn</string>
+    <string name="win">You Win</string>
+    <string name="lose">You Lose</string>
+    <string name="draw">Draw!!!</string>
+    <string name="startnewgame">Start a new game?</string>
 
 </resources>
