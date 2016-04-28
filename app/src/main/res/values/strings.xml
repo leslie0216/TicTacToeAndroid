@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">T3</string>
+    <string name="title">Tic Tac Toe</string>
+    <string name="serverorclient">Server or Client</string>
+    <string name="username">User Name</string>
+    <string name="server">Server</string>
+    <string name="client">Client</string>
+    <string name="waitingplayer">Waiting for player&#8230;</string>
+    <string name="searchinggame">Searching for game&#8230;</string>
+    <string name="empty">--Empty--</string>
+    <string name="scanfinish">Can not find player, keep searching?</string>
+    <string name="advfinish">Can not find game, keep searching?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="ok">OK</string>
+    <string name="notsupport">This device can not work as client</string>
+    <string name="periphfound">would like to join your game, do you accept?</string>
+    <string name="centalfoundp1">The game </string>
+    <string name="centalfoundp2"> was found,. Would you like to connect?</string>
+    <string name="btdisabled">Bluetooth is not enabled</string>
+    <string name="gattdisconnect">Connection failed</string>
+    <string name="readytogame">Ready to game</string>
+
+</resources>
