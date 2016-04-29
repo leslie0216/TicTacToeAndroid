@@ -118,6 +118,7 @@ public class BLEHandler {
     private BluetoothDevice m_centralDevice;
     private BluetoothGattCharacteristic m_writeCharacteristic;
     private BluetoothGattCharacteristic m_readCharacteristic;
+    public List<byte[]> PeripheralMessageQueue = new LinkedList<>();
     //endregion
 
     //region COMMON FUNCTIONS
@@ -241,6 +242,7 @@ public class BLEHandler {
                 m_bluetoothGattServer.close();
                 m_bluetoothGattServer = null;
             }
+            PeripheralMessageQueue.clear();
         }
 
         m_isInit = false;
@@ -775,6 +777,15 @@ public class BLEHandler {
             public void onNotificationSent(BluetoothDevice device, int status) {
                 super.onNotificationSent(device, status);
                 Log.d(TAG, "onNotificationSent to " + device.getName() + " status : " + status);
+                if (status == BluetoothGatt.GATT_SUCCESS && PeripheralMessageQueue.size() != 0) {
+                    PeripheralMessageQueue.remove(0);
+                }
+
+                if (PeripheralMessageQueue.size() != 0) {
+                    byte[] msg = PeripheralMessageQueue.get(0);
+                    m_writeCharacteristic.setValue(msg);
+                    m_bluetoothGattServer.notifyCharacteristicChanged(m_centralDevice, m_writeCharacteristic, false);
+                }
             }
 
             @Override
@@ -841,12 +852,18 @@ public class BLEHandler {
     }
 
     public boolean sendDataToCentral(byte[] msg) {
-        boolean rt;
-        m_writeCharacteristic.setValue(msg);
-        rt = !isCentral() &&
-                m_centralDevice != null &&
-                m_bluetoothGattServer != null &&
-                m_bluetoothGattServer.notifyCharacteristicChanged(m_centralDevice, m_writeCharacteristic, false);
+        boolean rt = false;
+        if (m_writeCharacteristic != null) {
+            PeripheralMessageQueue.add(msg);
+
+            if (PeripheralMessageQueue.size() == 1) {
+                m_writeCharacteristic.setValue(msg);
+                rt = !isCentral() &&
+                        m_centralDevice != null &&
+                        m_bluetoothGattServer != null &&
+                        m_bluetoothGattServer.notifyCharacteristicChanged(m_centralDevice, m_writeCharacteristic, false);
+            }
+        }
         Log.d(TAG, "sendDataToCentral: byteMsg size : " + msg.length + ", result : " + rt);
         return rt;
     }
