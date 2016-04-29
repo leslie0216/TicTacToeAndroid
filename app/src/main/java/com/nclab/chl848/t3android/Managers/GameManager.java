@@ -169,7 +169,15 @@ public class GameManager {
         broadcastStatus(GAMEMANAGER_START_NEW_GAME);
     }
 
+    public boolean isValidTile(int tileNum) {
+        return !(localPlayer.tileNumPlayed.contains(tileNum) || remotePlayer.tileNumPlayed.contains(tileNum));
+    }
+
     public void playerMove(int playerId, int tileNum) {
+        if (!isValidTile(tileNum)) {
+            return;
+        }
+
         if (isHost) {
             numFilledBoardSpots++;
             if (localPlayer.playerId == playerId) {

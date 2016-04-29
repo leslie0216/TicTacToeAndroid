@@ -52,7 +52,7 @@ public class LobbyActivity extends Activity {
                     if (bundle.containsKey(BLEHandler.BLE_EXTRA_DATA) && bundle.containsKey(BLEHandler.BLE_EXTRA_DATA_ADDRESS)) {
                         String name = bundle.getString(BLEHandler.BLE_EXTRA_DATA);
                         final String addr = bundle.getString(BLEHandler.BLE_EXTRA_DATA_ADDRESS);
-                        String msg = name + " " + getResources().getString(R.string.periphfound);
+                        String msg = " \"" + name + "\" " + getResources().getString(R.string.periphfound);
                         new AlertDialog.Builder(LobbyActivity.this).setTitle(getResources().getString(R.string.title)).setMessage(msg).setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -71,7 +71,7 @@ public class LobbyActivity extends Activity {
                 case BLEHandler.BLE_CONNECTION_PERIPHL_FOUND_CENTRAL_ACTION: {
                     Bundle bundle = intent.getExtras();
                     String name = bundle.getString(BLEHandler.BLE_EXTRA_DATA);
-                    String msg = getResources().getString(R.string.centalfoundp1) + name + getResources().getString(R.string.centalfoundp2);
+                    String msg = getResources().getString(R.string.centalfoundp1) + " \"" + name + "\" " + getResources().getString(R.string.centalfoundp2);
                     new AlertDialog.Builder(LobbyActivity.this).setTitle(getResources().getString(R.string.title)).setMessage(msg).setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {

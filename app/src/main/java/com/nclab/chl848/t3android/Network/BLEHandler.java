@@ -234,6 +234,10 @@ public class BLEHandler {
         } else {
             setIsAdvertise(false);
             if (m_bluetoothGattServer != null) {
+                if (m_centralDevice != null) {
+                    m_bluetoothGattServer.cancelConnection(m_centralDevice);
+                    m_centralDevice = null;
+                }
                 m_bluetoothGattServer.close();
                 m_bluetoothGattServer = null;
             }
@@ -272,7 +276,7 @@ public class BLEHandler {
 
     public int getConnectionCount() {
         if (isCentral()) {
-            return m_peripheralDevices.size();
+            return m_peripheralDevices == null ? 0 : m_peripheralDevices.size();
         } else {
             return m_centralDevice == null ? 0 : 1;
         }
@@ -303,22 +307,25 @@ public class BLEHandler {
     public void stopScan() {
         if (m_bluetoothAdapter != null && m_bluetoothAdapter.isEnabled()) {
             scanLeDevice(false);
+            m_scanHandler.removeCallbacks(m_scanRunnable);
         }
     }
+
+    private Runnable m_scanRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (m_isScanningOrAdvertising) {
+                m_isScanningOrAdvertising = false;
+                m_LEScanner.stopScan(m_scanCallback);
+                broadcastStatus(BLE_CONNECTION_AUTO_STOP_SCAN_ACTION);
+            }
+        }
+    };
 
     private void scanLeDevice(final boolean enable) {
         if (enable && !m_isScanningOrAdvertising) {
             // Stops scanning after a pre-defined scan period.
-            m_scanHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (m_isScanningOrAdvertising) {
-                        m_isScanningOrAdvertising = false;
-                        m_LEScanner.stopScan(m_scanCallback);
-                        broadcastStatus(BLE_CONNECTION_AUTO_STOP_SCAN_ACTION);
-                    }
-                }
-            }, SCAN_PERIOD);
+            m_scanHandler.postDelayed(m_scanRunnable, SCAN_PERIOD);
 
             // android.os.Build.VERSION.SDK_INT> 21
             m_isScanningOrAdvertising = true;
@@ -537,9 +544,9 @@ public class BLEHandler {
                     i.putExtra(BLE_EXTRA_DATA, characteristic.getValue());
                     i.putExtra(BLE_EXTRA_DATA_ADDRESS, gatt.getDevice().getAddress());
                     if (m_currentActivity == null) {
-                        Log.d(TAG, "onCharacteristicChanged: current activity is null, sleep 1000");
+                        Log.d(TAG, "onCharacteristicChanged: current activity is null, sleep 700ms");
                         try {
-                            Thread.sleep(1000);
+                            Thread.sleep(700);
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
